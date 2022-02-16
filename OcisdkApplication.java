@@ -2,96 +2,32 @@ package com.example.democrudrep.configuration;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.example.democrudrep.domain.Car;
 import com.example.democrudrep.event.NewSentQueryPageEvent;
 import com.example.democrudrep.event.SentQueryPageEvent;
 import com.example.democrudrep.service.GameService;
-import com.example.democrudrep.service.InsertService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oracle.bmc.ConfigFileReader;
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
-
-
-
 import com.oracle.bmc.streaming.StreamClient;
 import com.oracle.bmc.streaming.requests.CreateGroupCursorRequest;
 import com.oracle.bmc.streaming.requests.GetMessagesRequest;
-import com.oracle.bmc.streaming.requests.PutMessagesRequest;
 import com.oracle.bmc.streaming.responses.GetMessagesResponse;
 import com.oracle.bmc.streaming.model.CreateGroupCursorDetails;
 import com.oracle.bmc.streaming.model.Cursor;
-import com.oracle.bmc.streaming.model.PutMessagesDetails;
-import com.oracle.bmc.streaming.model.PutMessagesDetailsEntry;
 import com.oracle.bmc.streaming.model.CreateGroupCursorDetails.Type;
 import com.oracle.bmc.streaming.model.Message;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Value;
-
-
 import com.oracle.bmc.auth.InstancePrincipalsAuthenticationDetailsProvider;
 import com.oracle.bmc.http.ResteasyClientConfigurator;
 import com.oracle.bmc.identity.IdentityClient;
-import com.oracle.bmc.identity.model.CreateUserDetails;
-import com.oracle.bmc.identity.model.UpdateUserDetails;
-import com.oracle.bmc.identity.requests.CreateUserRequest;
-import com.oracle.bmc.identity.requests.DeleteUserRequest;
-import com.oracle.bmc.identity.requests.GetUserRequest;
-import com.oracle.bmc.identity.requests.UpdateUserRequest;
-import com.oracle.bmc.identity.responses.CreateUserResponse;
-import com.oracle.bmc.identity.responses.GetUserResponse;
-import com.oracle.bmc.identity.responses.UpdateUserResponse;
-
-import com.oracle.bmc.objectstorage.ObjectStorage;
-import com.oracle.bmc.objectstorage.ObjectStorageAsyncClient;
-import com.oracle.bmc.objectstorage.ObjectStorageClient;
-import com.oracle.bmc.Region;
-import com.oracle.bmc.objectstorage.model.CreateBucketDetails;
-import com.oracle.bmc.objectstorage.requests.CreateBucketRequest;
-import com.oracle.bmc.objectstorage.requests.DeleteBucketRequest;
-import com.oracle.bmc.objectstorage.requests.DeleteObjectRequest;
-import com.oracle.bmc.objectstorage.requests.GetNamespaceRequest;
-import com.oracle.bmc.objectstorage.requests.GetObjectRequest;
-import com.oracle.bmc.objectstorage.requests.PutObjectRequest;
-import com.oracle.bmc.objectstorage.responses.CreateBucketResponse;
-import com.oracle.bmc.objectstorage.responses.DeleteBucketResponse;
-import com.oracle.bmc.objectstorage.responses.DeleteObjectResponse;
-import com.oracle.bmc.objectstorage.responses.GetNamespaceResponse;
-import com.oracle.bmc.objectstorage.responses.GetObjectResponse;
-import com.oracle.bmc.objectstorage.responses.PutObjectResponse;
-import com.oracle.bmc.responses.AsyncHandler;
-
-import javax.ws.rs.client.ClientBuilder;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
-
-
-
 import javax.ws.rs.client.ClientBuilder;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -240,7 +176,7 @@ public class OcisdkApplication {
                                 } catch (JsonProcessingException e) {
                                 e.printStackTrace();
                                 }
-                                //getObjectSaveAsFile(osClient, osPathToObject); // OCI API Call
+                          
                         }
                         cursor = nextCursor;
                         logger.info("Size of Messages: {}",  messages.size());
@@ -253,44 +189,40 @@ public class OcisdkApplication {
         }
 
         private  Cursor createConsumerGroupCursor(StreamClient streamClient) {
-        // Create Consumer Group Cursor
-        // https://docs.oracle.com/en-us/iaas/api/#/en/streaming/20180418/Cursor/CreateGroupCursor
-        var createGroupCursorDetails = CreateGroupCursorDetails.builder()
-                                        .groupName("all")
-                                        .instanceName("consumerChampionship")
-                                        .type(Type.Latest)
-                                        .commitOnGet(true)
-                                        .build();
-        var createGroupCursorRequest = CreateGroupCursorRequest.builder()
-                                        .streamId(streamId)
-                                        .createGroupCursorDetails(createGroupCursorDetails)
-                                        .build();
-        var createGroupCursorResponse = streamClient.createGroupCursor(createGroupCursorRequest);
-        int createGroupCursorResponseCode = createGroupCursorResponse.get__httpStatusCode__();
-        if(createGroupCursorResponseCode != 200) {
-                logger.error("CreateGroupCursor failed - HTTP {}", createGroupCursorResponseCode);
-                System.exit(1);
-        }
-        return createGroupCursorResponse.getCursor();
+      
+                var createGroupCursorDetails = CreateGroupCursorDetails.builder()
+                                                .groupName("all")
+                                                .instanceName("consumerChampionship")
+                                                .type(Type.Latest)
+                                                .commitOnGet(true)
+                                                .build();
+                var createGroupCursorRequest = CreateGroupCursorRequest.builder()
+                                                .streamId(streamId)
+                                                .createGroupCursorDetails(createGroupCursorDetails)
+                                                .build();
+                var createGroupCursorResponse = streamClient.createGroupCursor(createGroupCursorRequest);
+                int createGroupCursorResponseCode = createGroupCursorResponse.get__httpStatusCode__();
+                if(createGroupCursorResponseCode != 200) {
+                        logger.error("CreateGroupCursor failed - HTTP {}", createGroupCursorResponseCode);
+                        System.exit(1);
+                }
+                return createGroupCursorResponse.getCursor();
         } 
 
         private  GetMessagesResponse getMessages(StreamClient streamClient, String cursor) {
-        // GetMessages
-        // https://docs.oracle.com/en-us/iaas/api/#/en/streaming/20180418/Message/GetMessages
-        var getMessagesRequest = GetMessagesRequest.builder()
-                                        .streamId(streamId)
-                                        .cursor(cursor)
-                                        .limit(10)
-                                        .build();
-        var getMessagesResponse = streamClient.getMessages(getMessagesRequest);
-        int getMessagesResponseCode = getMessagesResponse.get__httpStatusCode__();
-        if(getMessagesResponseCode != 200) {
-                logger.error("GetMessages failed - HTTP {}", getMessagesResponseCode);
-                System.exit(1);
+
+                var getMessagesRequest = GetMessagesRequest.builder()
+                                                .streamId(streamId)
+                                                .cursor(cursor)
+                                                .limit(10)
+                                                .build();
+                var getMessagesResponse = streamClient.getMessages(getMessagesRequest);
+                int getMessagesResponseCode = getMessagesResponse.get__httpStatusCode__();
+                if(getMessagesResponseCode != 200) {
+                        logger.error("GetMessages failed - HTTP {}", getMessagesResponseCode);
+                        System.exit(1);
+                }
+                return getMessagesResponse;
         }
-        return getMessagesResponse;
-        }
 
-} //end class
-
-
+}
